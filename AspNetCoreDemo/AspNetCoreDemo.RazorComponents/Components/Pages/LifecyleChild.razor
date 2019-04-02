@@ -1,0 +1,35 @@
+﻿@page "/lifecycle-child"
+
+<h1>Lifecycle Child</h1>
+
+<ul>
+    @foreach(var elem in lifecycle)
+    {
+        <li>elem</li>
+    }
+</ul>
+
+@functions {
+    IList<string> lifecycle = new List<string>();
+
+    [Parameter] int Number { get; set; }
+
+    protected override Task OnInitAsync()
+    {
+        lifecycle.Add($"Executing OnInitAsync child number {Number}");
+        return base.OnInitAsync();
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        lifecycle.Add($"Executing OnParametersSetAsync child number {Number}");
+
+        return base.OnParametersSetAsync();
+    }
+
+    protected override Task OnAfterRenderAsync()
+    {
+        lifecycle.Add(@"Executing OnAfterRenderAsync child number {Number}");
+        return base.OnAfterRenderAsync();
+    }
+}

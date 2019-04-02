@@ -44,6 +44,7 @@ namespace AspNetCoreDemo.RazorComponents
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            // Using Endpoint routing with RazorComponents to inform where the App starts
             app.UseRouting(routes =>
             {
                 routes.MapRazorPages();

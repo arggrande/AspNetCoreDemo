@@ -1,0 +1,92 @@
+﻿
+
+@page "/big-movies"
+@using AspNetCoreDemo.RazorComponents.Services
+@using System.Diagnostics;
+@inject MoviesService MoviesService
+
+
+<h1>Big Movies</h1>
+<p>This component demonstrates fetching the big list of movies data from two 
+    different service. One using the new Utf8JsonReader and regular Json.Net 
+    that uses Utf16 encoding.</p>
+
+<ul>
+    <li>
+        <button onclick="@LoadMoviesFromUtf8Endpoint">Load Movies(Utf8)</button>
+        <p>@utf8Duration</p>
+    </li>
+    <li>
+        <button onclick="@LoadMoviesFromUtf16Endpoint">Load Movies(Utf16)</button>
+        <p>@utf16Duration</p>
+    </li>
+</ul>
+
+
+@if (movies == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Year</th>
+            <th>Casts</th>
+            <th>Genres</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in movies)
+            {
+        <tr>
+            <td>@movie.Title</td>
+            <td>@movie.Year</td>
+            <td>@string.Join(";", movie.Cast)</td>
+            <td>@string.Join(";", movie.Genres)</td>
+        </tr>
+            }
+    </tbody>
+</table>
+}
+
+@functions {
+    IList<Data.Movie> movies = new List<Data.Movie>();
+    double utf8Duration;
+    double utf16Duration;
+
+    void AddNewMovie(Data.Movie movie)
+    {
+        if(!movies.Any(m => m.Title.Equals(movie.Title)))
+        {
+            movies.Add(movie);
+            this.StateHasChanged();
+        }
+    }
+
+    //Event handlers can also be asynchronous and return a task
+    async Task LoadMoviesFromUtf8Endpoint()
+    {
+        movies = null;
+        //this.StateHasChanged();
+        var timer = Stopwatch.StartNew();
+        movies = (await MoviesService.GetMovieBlobUtf8Async()).ToList();
+        timer.Stop();
+        utf8Duration = timer.ElapsedMilliseconds;
+        //this.StateHasChanged();
+
+    }
+
+    async Task LoadMoviesFromUtf16Endpoint()
+    {
+        movies = null;
+        //this.StateHasChanged();
+        var timer = Stopwatch.StartNew();
+        movies = (await MoviesService.GetMovieBlobUtf16Async()).ToList();
+        timer.Stop();
+        utf16Duration = timer.ElapsedMilliseconds;
+        //this.StateHasChanged();
+    }
+}

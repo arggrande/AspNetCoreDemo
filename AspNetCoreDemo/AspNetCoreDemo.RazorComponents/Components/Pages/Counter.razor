@@ -9,8 +9,10 @@
 @functions {
     int currentCount = 0;
 
-    void IncrementCount()
+    [Parameter] int IncrementValue { get; set; }
+
+    void IncrementCount(UIMouseEventArgs e)
     {
-        currentCount++;
+        currentCount+= e.ShiftKey ? 1000 :IncrementValue;
     }
 }

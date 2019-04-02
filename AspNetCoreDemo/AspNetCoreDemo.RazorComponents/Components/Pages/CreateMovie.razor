@@ -1,0 +1,42 @@
+﻿@page "/createmovie"
+
+<h1>Create Movie - @movie.Title</h1>
+
+<input placeholder="Title" bind="@movie.Title"/>
+<input placeholder="Year" bind="@movie.Year"/>
+
+<button onclick="@AddMovie">Create</button>
+
+
+@functions {
+    Data.Movie movie;
+
+    [Parameter] Action<Data.Movie> AddNewMovie { get; set; }
+
+    protected override Task OnInitAsync()
+    {
+        InitializeMovie();
+        return base.OnInitAsync();
+    }
+
+    void InitializeMovie()
+    {
+        movie = new Data.Movie
+        {
+            Cast = new string[] { },
+            Genres = new string[] { }
+        };
+    }
+
+    void AddMovie()
+    {
+        AddNewMovie(movie);
+        InitializeMovie();
+    }
+
+    public void InitializeNewMovie(string title, int year)
+    {
+        movie.Title = title;
+        movie.Year = year;
+    }
+}

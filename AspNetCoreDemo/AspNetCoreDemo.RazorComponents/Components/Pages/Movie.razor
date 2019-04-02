@@ -2,7 +2,12 @@
 @using AspNetCoreDemo.RazorComponents.Services
 @inject MoviesService MoviesService
 
+
 <h1>Movies</h1>
+
+<CreateMovie ref="createMovie" AddNewMovie="@((Action<Data.Movie>)AddNewMovie)" />
+
+<button onclick="@InitializeNewMovie">Initialise New Movie</button>
 
 <p>This component demonstrates fetching the movies data from a service.</p>
 
@@ -27,8 +32,8 @@ else
                 <tr>
                     <td>@movie.Title</td>
                     <td>@movie.Year</td>
-                    <td>@movie.Cast.ToString()</td>
-                    <td>@movie.Genres.ToString()</td>
+                    <td>@string.Join(";", movie.Cast)</td>
+                    <td>@string.Join(";", movie.Genres)</td>
                 </tr>
             }
         </tbody>
@@ -36,10 +41,25 @@ else
 }
 
 @functions {
-    Data.Movie[] movies;
+    IList<Data.Movie> movies;
+    CreateMovie createMovie;
+
+    void AddNewMovie(Data.Movie movie)
+    {
+        if(!string.IsNullOrWhiteSpace(movie.Title) && !movies.Any(m => m.Title.Equals(movie.Title)))
+        {
+            movies.Add(movie);
+            this.StateHasChanged();
+        }
+    }
+
+    void InitializeNewMovie()
+    {
+        createMovie.InitializeNewMovie("Dragon Ball Z Super", 2018);
+    }
 
     protected override async Task OnInitAsync()
     {
-        movies = await MoviesService.GetMovies();
+        movies = (await MoviesService.GetMoviesAsync()).ToList();
     }
 }
